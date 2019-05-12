@@ -1,0 +1,16 @@
+.nav-wrapper{
+    padding-left: 10px
+}
+
+.mobile{
+    display: none
+}
+
+@media screen and (max-width: 1000px) {
+    .mobile{
+        display: inline;
+    }
+    .mobile .material-icons{
+        font-size: 40px
+    }
+}

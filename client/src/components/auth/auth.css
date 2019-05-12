@@ -1,0 +1,169 @@
+.wrap {
+  width: 75%;
+  margin: 0 auto;
+}
+
+.login {
+  background: #fff;
+  padding: 7%;
+  margin-top: 10%;
+  position: relative;
+  border-radius: 12px;
+}
+
+.login_email {
+  width: 55%;
+  /* background: url(../../../public/images/border.png) no-repeat 331px 77px; */
+  float: left;
+  position: relative;
+}
+
+.login_account {
+  float: right;
+  width: 45%;
+}
+
+.clear {
+  clear: both;
+}
+
+.span {
+  margin-top: 20%;
+  width: 100%;
+  background: #de4c34;
+  transition: all 0.5s ease-out;
+  padding: 15px;
+}
+
+.span img {
+  background: #ce3e26;
+  float: left;
+}
+
+.span i {
+  font-size: 1.2em;
+  padding: 13px 14px;
+  color: #fff;
+}
+
+.span1 {
+  margin-top: 20%;
+  display: block;
+  width: 100%;
+  background: #3b5998;
+  transition: all 0.5s ease-out;
+  padding: 15px;
+}
+
+.span1 img {
+  background: #354f88;
+  float: left;
+}
+
+.span1 i {
+  font-size: 1.2em;
+  padding: 13px 14px;
+  color: #fff;
+}
+
+.login_email p {
+  font-size: 17px;
+  display: inline-block;
+  width: 50%;
+  margin: 20px 0 0;
+  letter-spacing: 1px;
+  float: left;
+}
+
+.login_email p a {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.social {
+  display: none;
+}
+
+.auth {
+  margin: 20px auto;
+  text-align: center;
+  width: 80%;
+margin-top: 10px;
+  padding: 10px;
+border-radius: 12px}
+
+.signin {
+  align-content: center;
+}
+
+.form_success {
+  color: lawngreen;
+}
+
+.error {
+  color: red;
+}
+.form_success .material-icons {
+  display: inline;
+}
+
+.error .material-icons {
+  display: inline;
+}
+
+@media (min-width: 600px) {
+  .auth {
+    width: 550px;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .login {
+    margin-top: 5px;
+  }
+
+  .login_email {
+    width: 100%;
+  }
+
+  .login_account {
+    display: none;
+  }
+  .social {
+    display: inline;
+    margin: 1em 0 0;
+  }
+
+  .social ul li {
+    margin: 0 2px;
+    display: inline-block;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .social a.fb {
+    background: #3b5998;
+  }
+
+  .social a.gp {
+    background: #dd4b39;
+  }
+
+  .social ul li a {
+    background: rgba(255, 255, 255, 0.22);
+    width: 40px;
+    height: 40px;
+    line-height: 35px;
+    display: block;
+    text-align: center;
+    border-radius: 33px;
+  }
+
+  .social span.fa {
+    color: #fff;
+    font-size: 12px;
+    line-height: 35px;
+    margin: 0 5px;
+    transition: 0.5s all;
+  }
+}

@@ -1,0 +1,42 @@
+.open{
+    transform: translateX(0) 
+  }
+  
+  .close{
+    transform: translateX(-100%)
+  }
+  
+  .input{
+
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 0px
+}
+
+.inputElement{
+    font: inherit;
+    background-color: #fff;
+    outline: none;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    display: block;
+    width: 100%;
+    box-sizing: border-box
+}
+
+.inputElement:focus{
+    outline: none;
+    background-color: #ccc;
+}
+
+.invalid{
+    border: 1px solid red;
+    background-color: #e47c7c;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold
+}
