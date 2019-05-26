@@ -28,10 +28,24 @@ export const populateOptionFields = (formdata, arrayData = [], field) => {
       const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
       isValid = pattern.test(values) && isValid;
     }
-  
+    if (rules.minAmount) {
+      isValid = values >= rules.minAmount && isValid;
+    }
     if (rules.isNumeric) {
       const pattern = /^\d+$/;
       isValid = pattern.test(values) && isValid;
     }
     return isValid;
   };
+
+  export const populateFields = (formData, fields) => {
+
+    for(let key in formData){
+        formData[key].value = fields[key];
+        formData[key].valid = true;
+        formData[key].touched = true;
+        formData[key].validationMessage = ''
+    }
+  
+    return formData;
+  }

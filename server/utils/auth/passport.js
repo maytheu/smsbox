@@ -3,7 +3,7 @@ const facebookStrategy = require("passport-facebook").Strategy;
 const googleStrategy = require("passport-google-oauth20").Strategy;
 require("dotenv").config();
 
-const { User } = require("../model/user");
+const { User } = require("../../model/user");
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -30,7 +30,11 @@ passport.use(
         //true
         done(null, existingUser);
       } else {
-        const user = await new User({ profileId: profile.id }).save();
+        const user = await new User({
+          profileId: profile.id,
+          name: profile.displayName,
+          email: profile.emails[0].value,
+        }).save();
         done(null, user);
       }
     }
@@ -56,7 +60,7 @@ passport.use(
       const user = await new User({
         profileId: profile.id,
         name: profile.displayName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
       }).save();
       done(null, user);
     }

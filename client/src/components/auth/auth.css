@@ -1,12 +1,8 @@
-.wrap {
-  width: 75%;
-  margin: 0 auto;
-}
+
 
 .login {
   background: #fff;
   padding: 7%;
-  margin-top: 10%;
   position: relative;
   border-radius: 12px;
 }

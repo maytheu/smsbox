@@ -19,7 +19,11 @@ import Group from "./components/user/group/Group";
 import EditGroup from "./components/user/group/EditGroup";
 import Message from "./components/user/message/Message";
 import EditDashboard from "./components/user/dashboard/EditDashboard";
-import Plan from "./components/home/Plan";
+import Plan from "./components/home/plan/Plan";
+import Faqs from "./components/home/faqs/Faqs";
+import AdminFaqs from "./components/user/admin/faqs/Faqs";
+import PlanDetails from "./components/home/plan/PlanDetails";
+import Paystack from "./components/user/Paystack";
 
 class App extends Component {
   state = {
@@ -35,8 +39,10 @@ class App extends Component {
     return (
       <div>
         {this.state.isLoading ? (
-          <div className="center-align loader">
-            <CircularProgress thickness={7} style={{ color: "#ee6e73" }} />
+          <div className="sms_bck">
+            <div className="center-align loader">
+              <CircularProgress thickness={7} style={{ color: "#ffffff" }} />
+            </div>
           </div>
         ) : (
           <div>
@@ -75,7 +81,7 @@ class App extends Component {
                   component={AuthCheck(Dashboard, true)}
                 />
                 <Route
-                  path="/user/dashboard/edit/:id"
+                  path="/user/dashboard/edit/"
                   exact
                   component={AuthCheck(EditDashboard, true)}
                 />
@@ -94,14 +100,30 @@ class App extends Component {
                   exact
                   component={AuthCheck(EditGroup, true)}
                 />
+                <Route
+                  path="/buy/:plan"
+                  exact
+                  component={AuthCheck(Paystack, true)}
+                />
 
                 <Route
                   path="/admin/manage_emails"
                   exact
                   component={AuthCheck(ManageEmails, true, true)}
                 />
+                <Route
+                  path="/admin/faqs"
+                  exact
+                  component={AuthCheck(AdminFaqs, true, true)}
+                />
 
+                <Route path="/faqs" exact component={AuthCheck(Faqs, null)} />
                 <Route path="/plan" exact component={AuthCheck(Plan, null)} />
+                <Route
+                  path="/plan/:title"
+                  exact
+                  component={AuthCheck(PlanDetails, null)}
+                />
                 <Route path="/" exact component={AuthCheck(Home, null)} />
               </Switch>
             </Layout>

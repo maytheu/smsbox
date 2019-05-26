@@ -6,6 +6,16 @@
     display: none
 }
 
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #ee6e73;
+    color: #fff;
+    text-align: center;
+  }
+
 @media screen and (max-width: 1000px) {
     .mobile{
         display: inline;

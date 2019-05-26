@@ -1,31 +1,42 @@
 import React, { Component } from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 class Dashboard extends Component {
-  componentDidMount() {}
   render() {
+    const user = this.props.isUser.userData;
     return (
-      <div className="container">
-        <div>
-          <div>Name</div>
-          <div>Ade Mato</div>
-        </div>
-        <div>
-          <div>Email Address</div>
-          <div>maytheu98@gmail.com</div>
-        </div>
-        <div>
-          <div>Credit Balance</div>
-          <div>450 unit</div>
-        </div>
-        <div>
-          <Link to="/user/dashboard/edit/">Edit Profile</Link>
-          <Link to="/user/pay">Add Credits</Link>
+      <div className="wrap">
+        <div className="content">
+          <div>
+            <div>Name</div>
+            <div>{user.name}</div>
+          </div>
+          <div>
+            <div>Email Address</div>
+            <div>{user.email}</div>
+          </div>
+          <div>
+            <div>Credit Balance</div>
+            <div>{user.units} unit</div>
+          </div>
+
+          <p>
+            <Link to="/plan">Add Unit</Link>
+          </p>
+          <p className="right">
+            <Link to="/user/dashboard/edit/">Edit Profile</Link>
+          </p>
         </div>
       </div>
     );
   }
 }
 
-export default Dashboard;
+function mapStateToProps(state) {
+  return {
+    isUser: state.user
+  };
+}
+
+export default connect(mapStateToProps)(Dashboard);

@@ -16,7 +16,6 @@ const userSchema = mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
     minLength: 6
   },
   name: {
@@ -28,6 +27,7 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
+  cash: Number,
   role: {
     type: Number,
     default: 0
@@ -41,7 +41,7 @@ const userSchema = mongoose.Schema({
   },
   sent: {
     type: Array,
-    default: []
+    default: [] 
   }
 });
 

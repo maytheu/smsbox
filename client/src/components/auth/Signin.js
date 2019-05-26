@@ -45,7 +45,8 @@ class Signin extends Component {
     },
     isFormValid: false,
     isLoading: false,
-    isFormError: false
+    isFormError: false,
+    errorMsg: ""
   };
 
   inputChangedHandler = (event, formName) => {
@@ -84,9 +85,11 @@ class Signin extends Component {
           this.setState({ isLoading: false });
           this.props.history.push("/user/dashboard");
         } else {
+          this.props.dispatch(authUser());
           this.setState({
             isFormError: true,
-            isLoading: false
+            isLoading: false,
+            errorMsg: response.payload.message
           });
         }
       });
@@ -117,80 +120,82 @@ class Signin extends Component {
       />
     ));
     return (
-      <div className="wrap">
-        <div className="login">
-          <div className="login_email">
-            <form onSubmit={e => this.submitHandler(e)}>
-              {form}
-              {this.state.isLoading ? (
-                <div className="center-align">
-                  <CircularProgress
-                    thickness={7}
-                    style={{ color: "#ee6e73" }}
-                  />
-                </div>
-              ) : (
-                <div className="center-align">
-                  <Button
-                    disabled={!this.state.isFormValid}
-                    onClick={e => this.submitHandler(e)}
-                    style={{
-                      borderRadius: "5px",
-                      background: "#ee6e73",
-                      width: "50%",
-                      color: "#fff",
-                      cursor: !this.state.isFormValid ? "none" : "pointer"
-                    }}
-                  >
-                    Signin
-                  </Button>
-                </div>
-              )}
-              <div className="clear" />
-              {this.state.isFormError ? <div>Account not found</div> : ""}
-              <p>
-                <Link to="/forget_password">Forget Password</Link>{" "}
-              </p>
-              <p className="right">
-                <Link to="/sign_up">Sign Up with Email</Link>
-              </p>
-            </form>
-          </div>
-          <div className="login_account">
-            <div className="span ">
-              <a href="auth/google">
-                <img src={gp} alt="g+ icon" />
-                <i>Sign In with Google+</i>
-              </a>
+      <div>
+        <div className="wrap">
+          <div className="login">
+            <div className="login_email">
+              <form onSubmit={e => this.submitHandler(e)}>
+                {form}
+                {this.state.isLoading ? (
+                  <div className="center-align">
+                    <CircularProgress
+                      thickness={7}
+                      style={{ color: "#ee6e73" }}
+                    />
+                  </div>
+                ) : (
+                  <div className="center-align">
+                    <Button
+                      disabled={!this.state.isFormValid}
+                      onClick={e => this.submitHandler(e)}
+                      style={{
+                        borderRadius: "5px",
+                        background: "#ee6e73",
+                        width: "50%",
+                        color: "#fff",
+                        cursor: !this.state.isFormValid ? "none" : "pointer"
+                      }}
+                    >
+                      Signin
+                    </Button>
+                  </div>
+                )}
+                <div className="clear" />
+                {this.state.isFormError ? <div>{this.state.errorMsg}</div> : ""}
+                <p>
+                  <Link to="/forget_password">Forget Password</Link>{" "}
+                </p>
+                <p className="right">
+                  <Link to="/sign_up">Sign Up with Email</Link>
+                </p>
+              </form>
             </div>
-            <div className="span1">
-              <a href="auth/facebook">
-                <img src={fb} alt="fb icon" />
-                <i>Sign In with Facebook</i>
-              </a>
+            <div className="login_account">
+              <div className="span ">
+                <a href="/auth/google">
+                  <img src={gp} alt="g+ icon" />
+                  <i>Sign In with Google+</i>
+                </a>
+              </div>
+              <div className="span1">
+                <a href="/auth/facebook">
+                  <img src={fb} alt="fb icon" />
+                  <i>Sign In with Facebook</i>
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="social">
-            <ul>
-              <li>Or Sign In Using : </li>
-              <li>
-                <a href="/auth/google" className="gp">
-                  <span className="fa">
-                    <img src={gp} alt="gp" />
-                  </span>
-                </a>{" "}
-              </li>
-              <li>
-                <a href="/auth/facebook" className="fb">
-                  <span className="fa">
-                    <img src={fb} alt="fb" />
-                  </span>
-                </a>{" "}
-              </li>
-            </ul>
-          </div>
+            <div className="social">
+              <ul>
+                <li>Or Sign In Using : </li>
+                <li>
+                  <a href="/auth/google" className="gp">
+                    <span className="fa">
+                      <img src={gp} alt="gp" />
+                    </span>
+                  </a>{" "}
+                </li>
+                <li>
+                  <a href="/auth/facebook" className="fb">
+                    <span className="fa">
+                      <img src={fb} alt="fb" />
+                    </span>
+                  </a>{" "}
+                </li>
+              </ul>
+            </div>
 
-          <div className="clear" />
+            <div className="clear" />
+          </div>
         </div>
       </div>
     );

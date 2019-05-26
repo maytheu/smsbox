@@ -14,18 +14,35 @@ code {
 }
 
 .loader {
-  margin-top: 20%;
+  padding-top: 20%;
 }
 
-.container {
+
+.wrap {
   width: 75%;
-  margin: 0 auto;
-  border-radius: 5px;
-  margin-top: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  height: 60%;
+}
+
+.content{
+  background: #fff;
+  padding: 7%;
+  position: relative;
+  border-radius: 12px;
+}
+.sms_bck{
+  background: #ee6e73;
+  height: 100vh;
+}
+.clear {
+  clear: both;
 }
 
 @media screen and (max-width: 650px) {
-  .container {
-    margin-top: 16px;
-  }
+
 }
