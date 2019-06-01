@@ -22,7 +22,7 @@ class PlanDetails extends Component {
           {this.state.isLoading ? (
             <div>
               <h4>{plan.name}</h4>
-              <p>{plan.detail}</p>
+             <div dangerouslySetInnerHTML={{__html: plan.detail}}/>
               <div className="right">
                 <Link
                   to={user.isAuth ? `/buy/${plan.link_title}` : "/signin"}

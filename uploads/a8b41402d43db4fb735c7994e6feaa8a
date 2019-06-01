@@ -1,0 +1,22 @@
+function main(){
+select html class with $('.class') and id $('#id')
+there are different function that can be call on a selector
+.hide();//hide display:none to the css propety
+.fadeIn(400);//fade in slowly in .4seconds
+.show(); //display selected element
+.toggle(); //hide or show a selector
+.toggleCLass(class); // toggle CSS class that is selected
+.text('Hello'); // replace the selected text with hello
+.slideToggle(400);//slide in and out the selctor
+.attr('class');//select attribute of the class
+
+//event listener
+$('#id').on('click', function(){
+$(this).show(); //show only the click item of the id selectoe since there are many selector
+$(this).next().show(); //show only the  next item of the id selectoe in the DOM
+});
+} //ur defined function
+
+$(document).ready(main); //ensures that the function is loaded b4 procedding
+
+your written script should be below the jq

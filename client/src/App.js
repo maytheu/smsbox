@@ -14,16 +14,20 @@ import ForgetPassword from "./components/auth/ForgetPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import SignUp from "./components/auth/SignUp";
 import Dashboard from "./components/user/dashboard/Dashboard";
+import EditDashboard from "./components/user/dashboard/EditDashboard";
 import ManageEmails from "./components/user/admin/ManageEmails";
 import Group from "./components/user/group/Group";
 import EditGroup from "./components/user/group/EditGroup";
-import Message from "./components/user/message/Message";
-import EditDashboard from "./components/user/dashboard/EditDashboard";
 import Plan from "./components/home/plan/Plan";
 import Faqs from "./components/home/faqs/Faqs";
 import AdminFaqs from "./components/user/admin/faqs/Faqs";
 import PlanDetails from "./components/home/plan/PlanDetails";
 import Paystack from "./components/user/Paystack";
+import AddEditFaqs from "./components/user/admin/faqs/AddEditFaqs";
+import AddEditPlan from "./components/user/admin/plan/AddEditPlan";
+import AdminPlan from "./components/user/admin/plan/Plan";
+import FaqsDetails from "./components/home/faqs/FaqsDetails";
+import Message from "./components/user/message/Message";
 
 class App extends Component {
   state = {
@@ -76,15 +80,14 @@ class App extends Component {
                   component={AuthCheck(Message, true)}
                 />
                 <Route
-                  path="/user/dashboard"
-                  exact
+                  path="/user/dashboard" exact
                   component={AuthCheck(Dashboard, true)}
                 />
-                <Route
-                  path="/user/dashboard/edit/"
-                  exact
+                                <Route
+                  path="/user/dashboard/edit" exact
                   component={AuthCheck(EditDashboard, true)}
                 />
+
                 <Route
                   path="/user/groups"
                   exact
@@ -116,8 +119,38 @@ class App extends Component {
                   exact
                   component={AuthCheck(AdminFaqs, true, true)}
                 />
+                <Route
+                  path="/admin/faqs/edit/:title"
+                  exact
+                  component={AuthCheck(AddEditFaqs, true, true)}
+                />
+                <Route
+                  path="/admin/faqs/new"
+                  exact
+                  component={AuthCheck(AddEditFaqs, true, true)}
+                />
+                <Route
+                  path="/admin/plan"
+                  exact
+                  component={AuthCheck(AdminPlan, true, true)}
+                />
+                <Route
+                  path="/admin/plan/new"
+                  exact
+                  component={AuthCheck(AddEditPlan, true, true)}
+                />
+                <Route
+                  path="/admin/plan/edit/:page"
+                  exact
+                  component={AuthCheck(AddEditPlan, true, true)}
+                />
 
                 <Route path="/faqs" exact component={AuthCheck(Faqs, null)} />
+                <Route
+                  path="/faqs/:title"
+                  exact
+                  component={AuthCheck(FaqsDetails, null)}
+                />
                 <Route path="/plan" exact component={AuthCheck(Plan, null)} />
                 <Route
                   path="/plan/:title"

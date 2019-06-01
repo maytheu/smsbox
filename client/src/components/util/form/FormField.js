@@ -8,6 +8,15 @@ const FormField = props => {
   if (props.invalid && props.shouldValidate && props.touched) {
     validateInputClass.push("invalid");
   }
+
+  const showMessage = () => {
+    let errorMessage = null;
+    if (props.invalid && props.shouldValidate && props.touched) {
+      errorMessage = <div className="input-field col s12">{props.message}</div>;
+    }
+    return errorMessage;
+  };
+
   switch (props.elementType) {
     case "input":
       inputElement = (
@@ -32,9 +41,10 @@ const FormField = props => {
               value={props.value}
               onChange={props.changed}
             >
+              <option value=''>Select group</option>
               {props.elementConfig.options.map(option => (
-                <option value={option.value} key={option.value}>
-                  {option.displayValue}
+                <option value={option.value} key={option.key}>
+                  {option.key}
                 </option>
               ))}
             </select>
@@ -53,6 +63,7 @@ const FormField = props => {
               onChange={props.changed}
             />
           </div>
+          {showMessage()}
         </div>
       );
       break;
@@ -72,7 +83,7 @@ const FormField = props => {
   }
   return (
     <div className="row input">
-      <label className="label">{props.elementConfig.label}</label>
+      {/* <label className="label">{props.elementConfig.label}</label> */}
       {inputElement}
     </div>
   );

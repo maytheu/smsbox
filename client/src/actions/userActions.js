@@ -6,7 +6,8 @@ import {
   USER_AUTH,
   USER_LOGOUT,
   USER_REGISTER,
-  USER_RESET
+  USER_RESET,
+  USER_PROFILE
 } from "./types";
 
 export function loginUser(data) {
@@ -60,6 +61,17 @@ export function registerUser(data) {
 
   return {
     type: USER_REGISTER,
+    payload: request
+  };
+}
+
+export function userProfile(data) {
+  const request = axios
+    .post(`${USER_SERVER}edit_profile`, data)
+    .then(response => response.data);
+
+  return {
+    type: USER_PROFILE,
     payload: request
   };
 }

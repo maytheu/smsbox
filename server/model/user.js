@@ -27,6 +27,10 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
+  initialUnit: {
+    type: Number,
+    default: 50
+  },
   cash: Number,
   role: {
     type: Number,

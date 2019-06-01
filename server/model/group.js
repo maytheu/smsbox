@@ -8,6 +8,7 @@ const groupSchema = mongoose.Schema({
   },
   contacts: {
     type: String,
+    required: true
   },
   user: String,
   units: Number

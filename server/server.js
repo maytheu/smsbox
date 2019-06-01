@@ -5,7 +5,10 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const moment = require("moment");
 const cookieSession = require("cookie-session");
-// const SHA1 = require("crypto-js/sha1");
+const multer = require("multer");
+const fs = require("fs"); //access file dir
+const path = require("path");
+const Nexmo = require("nexmo");
 
 const app = express();
 
@@ -26,6 +29,11 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 
+const nexmo = new Nexmo({
+  apiKey: process.env.NEXMO_KEYS,
+  apiSecret: process.env.NEXMO_SECRET
+});
+
 app.use(express.static("client/build"));
 
 const { User } = require("./model/user");
@@ -37,6 +45,7 @@ const { Faqs } = require("./model/faqs");
 const { auth } = require("./middleware/auth");
 const { unit } = require("./middleware/unit");
 const { admin } = require("./middleware/admin");
+const { bonus } = require("./middleware/bonus");
 
 require("./utils/auth/passport");
 const { input } = require("./utils/validate/input");
@@ -227,35 +236,61 @@ calculate the message for deduction
 update the database with the unit and sent message
 */
 
-app.post("/api/message/new_message", auth, unit, (req, res) => {
+app.post("/api/message/new_message", auth, bonus, unit, (req, res) => {
   let messageHistory = {};
   let userUnit = req.user.units;
-  let messageUnit = total(req.body.contacts) || req.group.units;
+  let messageUnit = total(req.body.contacts);
+  const message = new Message(req.body);
   if (messageUnit < userUnit) {
     //proceed tto message api
     //update the databse with unit and sent array
-
-    userUnit = userUnit - messageUnit;
-    messageHistory.data = {
-      id: req.message.id,
-      unitDeducted: userUnit,
-      totalContacts: userUnit,
-      tag: req.message.tag,
-      message: req.message.message
-    }; //user info msg
-    messageHistory.user = {
-      id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-      unit: userUnit
-    }; //adminto seee user details
+    nexmo.message.sendSms(
+      req.body.tag,
+      req.body.contacts,
+      req.body.message,
+      (err, responseData) => {
+        if (err) {
+          console.log(err);
+          res.json({ success: err });
+        } else {
+          console.log(responseData);
+          userUnit = userUnit - messageUnit;
+          messageHistory.data = {
+            id: req.message.id,
+            unitDeducted: messageUnit,
+            totalContacts: messageUnit,
+            tag: req.message.tag,
+            message: req.message.message
+          }; //user info msg
+          messageHistory.user = {
+            id: req.user._id,
+            name: req.user.name,
+            email: req.user.email,
+            unit: userUnit
+          }; //adminto seee user details
+          User.findOneAndUpdate(
+            { _id: req.user._id },
+            { $push: { sent: messageHistory } },
+            { $set: { units: userUnit } },
+            { new: true },
+            (err, user) => {
+              if (err) return res.json({ success: err });
+              message.save((err, doc) => {
+                if (err) return res.json({ success: err });
+                res.status(200).json({ success: true });
+              });
+            }
+          );
+        }
+      }
+    );
   } else {
     res.json({ success: "You do not have enough unit" });
   }
 });
 
-app.get("/api/message/history", auth, (req, res) => {
-  Message.find({ user: req.user._id }, (err, message) => {
+app.get("/api/message/history", auth, admin, (req, res) => {
+  Message.find({}, (err, message) => {
     if (err) return res.status(400).send(err);
     res.status(200).send(message);
   });
@@ -269,6 +304,14 @@ app.get("/api/message/view_message", auth, (req, res) => {
   });
 });
 
+app.get("/api/message/delete", auth, (req, res) => {
+  let historyId = req.query.id;
+
+  User.findOneAndRemove({ sent: { $in: historyId } }).exec((err, docs) => {
+    return res.status(200).send({ success: true });
+  });
+});
+
 /*Edit message
 find the messsage with the id
 to update the fields
@@ -276,6 +319,63 @@ to update the fields
 you canow edit the message for sending
 and performing the send message operation again
 */
+app.post("/api/message/edit_message", auth, bonus, unit, (req, res) => {
+  let userUnit = req.user.units;
+  let messageUnit = total(req.body.contacts);
+  const message = new Message(req.body);
+  if (messageUnit < userUnit) {
+    nexmo.message.sendSms(
+      req.body.tag,
+      req.body.contacts,
+      req.body.message,
+      (err, responseData) => {
+        if (err) {
+          console.log(err);
+          res.json({ success: err });
+        } else {
+          console.log(responseData);
+          userUnit = userUnit - messageUnit;
+          messageHistory.data = {
+            id: req.message.id,
+            unitDeducted: messageUnit,
+            totalContacts: messageUnit,
+            tag: req.message.tag,
+            message: req.message.message
+          }; //user info msg
+          messageHistory.user = {
+            id: req.user._id,
+            name: req.user.name,
+            email: req.user.email,
+            unit: userUnit
+          }; //adminto seee user details
+          User.findOneAndUpdate(
+            { _id: req.user._id },
+            { $push: { sent: messageHistory } },
+            { $set: { units: userUnit } },
+            { new: true },
+            (err, user) => {
+              if (err) return res.json({ success: err });
+              Message.findOneAndUpdate(
+                { _id: req.body._id },
+                { $set: req.body },
+                { new: true },
+                (err, doc) => {
+                  if (err) return res.json({ success: err });
+                  return res.status(200).send({
+                    success: true,
+                    updateMessage: doc
+                  });
+                }
+              );
+            }
+          );
+        }
+      }
+    );
+  } else {
+    res.json({ success: "You do not have enough unit" });
+  }
+});
 
 //=================================
 //             GROUP
@@ -286,6 +386,15 @@ app.get("/api/group/group", auth, (req, res) => {
     res.status(200).send(group);
   });
 });
+const upload = multer({ dest: "uploads" });
+
+app.post("/api/group/upload", auth, upload.single("file"), (req, res) => {
+  const absolutePath = path.join(__dirname, "../", req.file.path);
+  const jsonString = fs.readFileSync(absolutePath, "utf-8");
+  // if (err) return res.json({ success: "Incompatible file type" });
+  console.log(jsonString);
+  res.status(200).send({ success: true, contact: jsonString });
+});
 
 app.post("/api/group/create_group", auth, (req, res) => {
   const group = new Group({
@@ -295,31 +404,38 @@ app.post("/api/group/create_group", auth, (req, res) => {
     units: total(req.body.contacts)
   });
 
-  //a function to read and validate the file
-  //validate a number with specific length and seperated with a comma
   if (input(req.body.contacts)) {
     group.save((err, doc) => {
-      if (err) return res.json({ success: false, err });
+      if (err) return res.json({ success: err });
       res.status(200).json({ success: true });
     });
   } else {
-    return res.json({ success: "Non compatible format" });
+    return res.json({ success: "Non compatible number format" });
   }
 });
 
 app.post("/api/group/edit_group", auth, (req, res) => {
-  Group.findOneAndUpdate(
-    { user: req.user._id },
-    { $set: req.body },
-    { new: true },
-    (err, doc) => {
-      if (err) return res.json({ success: false, err });
-      return res.status(200).send({
-        success: true,
-        updateGroup: doc
-      });
-    }
-  );
+  let verify = {
+    contacts: req.body.contacts,
+    units: total(req.body.contacts),
+    title: req.body.title
+  };
+  if (input(req.body.contacts)) {
+    Group.findOneAndUpdate(
+      { _id: req.body._id },
+      { $set: verify },
+      { new: true },
+      (err, doc) => {
+        if (err) return res.json({ success: err });
+        return res.status(200).send({
+          success: true,
+          updateGroup: doc
+        });
+      }
+    );
+  } else {
+    return res.json({ success: "Non compatible format" });
+  }
 });
 
 app.get("/api/group/view_group", auth, (req, res) => {
@@ -327,6 +443,14 @@ app.get("/api/group/view_group", auth, (req, res) => {
 
   Group.find({ _id: { $in: group } }).exec((err, docs) => {
     return res.status(200).send(docs);
+  });
+});
+
+app.get("/api/group/delete", auth, (req, res) => {
+  let group = req.query.id;
+
+  Group.findOneAndRemove({ _id: { $in: group } }).exec((err, docs) => {
+    return res.status(200).send({ success: true });
   });
 });
 
@@ -357,9 +481,9 @@ app.post("/api/plan/new_plan", auth, admin, (req, res) => {
   });
 });
 
-app.post("/api/post/edit_plan", auth, admin, (req, res) => {
+app.post("/api/plan/edit_plan", auth, admin, (req, res) => {
   Plan.findOneAndUpdate(
-    { _id: req.plan._id },
+    { _id: req.body._id },
     { $set: req.body },
     { new: true },
     (err, doc) => {
@@ -395,14 +519,14 @@ app.get("/api/faqs/list", (req, res) => {
 app.get("/api/faqs/view", (req, res) => {
   let faqs = req.query.title;
 
-  Faqs.find({ link: { $in: faqs } }).exec((err, docs) => {
+  Faqs.find({ link_title: { $in: faqs } }).exec((err, docs) => {
     return res.status(200).send(docs);
   });
 });
 
 app.post("/api/faqs/edit", auth, admin, (req, res) => {
   Faqs.findOneAndUpdate(
-    { _id: req.faqs._id },
+    { _id: req.body._id },
     { $set: req.body },
     { new: true },
     (err, doc) => {

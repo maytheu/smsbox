@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 
 const faqsSchema = mongoose.Schema({
-  link: {
+  link_title: {
     type: String,
     required: true
   },
+  name: { type: String, required: true },
   detail: {
     type: String,
     required: true

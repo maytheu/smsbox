@@ -3,30 +3,28 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import { getFaqs, clearFaqs } from "../../../../actions/faqsActions";
+import { plan, clearPlan } from "../../../../actions/planActions";
 
-class Faqs extends Component {
+class Plan extends Component {
   state = { isLoading: true };
 
   componentDidMount() {
-    this.props.dispatch(getFaqs()).then(() => {
+    this.props.dispatch(plan()).then(() => {
       this.setState({ isLoading: false });
     });
   }
 
   componentWillUnmount() {
-    this.props.dispatch(clearFaqs());
+    this.props.dispatch(clearPlan());
   }
 
-  viewFaqs = () =>
+  viewPlan = () =>
     !this.state.isLoading ? (
-      this.props.isFaqs.faqs.map(faq => (
-        <div key={faq._id}>
-          <div className="center-align">
-            <Link to={`/admin/faqs/edit/${faq.link_title}`}>
-              <h6>{faq.name}</h6>
-            </Link>
-          </div>
+      this.props.isPlan.plans.map(plan => (
+        <div key={plan._id}>
+          <Link to={`/admin/plan/edit/${plan.link_title}`}>
+            <h5>{plan.name}</h5>
+          </Link>
         </div>
       ))
     ) : (
@@ -39,8 +37,8 @@ class Faqs extends Component {
     return (
       <div className="wrap">
         <div className="content">
-          {this.viewFaqs()}
-          <Link to="/admin/faqs/new" className="btn-floating btn-large red">
+          {this.viewPlan()}
+          <Link to="/admin/plan/new" className="btn-floating btn-large red">
             <i className="material-icons">add</i>
           </Link>
         </div>
@@ -51,8 +49,8 @@ class Faqs extends Component {
 
 function mapStateToProps(state) {
   return {
-    isFaqs: state.faqs
+    isPlan: state.plan
   };
 }
 
-export default connect(mapStateToProps)(Faqs);
+export default connect(mapStateToProps)(Plan);

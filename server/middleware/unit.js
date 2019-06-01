@@ -2,7 +2,7 @@ let unit = (req, res, next) => {
   if (req.user.units < 1) {
     return res.json({
       isUnit: false,
-      error: true
+      success: true
     });
   }
   next();

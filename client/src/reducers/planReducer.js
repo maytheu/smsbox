@@ -1,4 +1,9 @@
-import { VIEW_PLAN, VIEW_PLAN_DETAIL } from "../actions/types";
+import {
+  VIEW_PLAN,
+  VIEW_PLAN_DETAIL,
+  ADMIN_CREATE_PLAN,
+  ADMIN_EDIT_PLAN
+} from "../actions/types";
 
 export default function(state = {}, action) {
   switch (action.type) {
@@ -6,6 +11,10 @@ export default function(state = {}, action) {
       return { ...state, plans: action.payload };
     case VIEW_PLAN_DETAIL:
       return { ...state, plans: action.payload };
+    case ADMIN_CREATE_PLAN:
+      return { ...state };
+    case ADMIN_EDIT_PLAN:
+      return { ...state };
     default:
       return state;
   }

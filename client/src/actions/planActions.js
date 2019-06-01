@@ -1,7 +1,13 @@
 import axios from "axios";
 
 import { PLAN_SERVER } from "../components/util/url";
-import { VIEW_PLAN, VIEW_PLAN_DETAIL, CLEAR_PLAN } from "./types";
+import {
+  VIEW_PLAN,
+  VIEW_PLAN_DETAIL,
+  CLEAR_PLAN,
+  ADMIN_CREATE_PLAN,
+  ADMIN_EDIT_PLAN
+} from "./types";
 
 export function plan() {
   const request = axios
@@ -31,5 +37,24 @@ export function clearPlan() {
   return {
     type: CLEAR_PLAN,
     payload: ""
+  };
+}
+
+export function newAdminPlan(data) {
+  const request = axios.post(`${PLAN_SERVER}new_plan`, data).then(response => {
+    return response.data;
+  });
+  return {
+    type: ADMIN_CREATE_PLAN,
+    payload: request
+  };
+}
+export function editAdminPlan(data) {
+  const request = axios.post(`${PLAN_SERVER}edit_plan`, data).then(response => {
+    return response.data;
+  });
+  return {
+    type: ADMIN_EDIT_PLAN,
+    payload: request
   };
 }

@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import {
-  checkValidityInput,
-  populateFields
-} from "../../util/form/formActions";
+import { checkValidityInput } from "../../util/form/formActions";
 import FormField from "../../util/form/FormField";
+import { userProfile, authUser } from "../../../actions/userActions";
 
 class EditDashboard extends Component {
   state = {
@@ -48,11 +45,18 @@ class EditDashboard extends Component {
   };
 
   componentDidMount() {
+    this.setState({ isLoading: true });
     const user = this.props.isUser.userData;
-    const newFormData = populateFields(this.state.formd, user);
-    this.setState({
-      form: newFormData
-    });
+    const newForm = { ...this.state.form };
+    for (let key in newForm) {
+      newForm[key].value = user[key];
+      newForm[key].valid = true;
+    }
+    this.setState({ form: newForm, isLoading: false });
+  }
+
+  componentWillUnmount(){
+    this.props.dispatch(authUser());
   }
 
   inputChangedHandler = (event, formName) => {
@@ -85,20 +89,19 @@ class EditDashboard extends Component {
       validForm = this.state.form[key].valid && validForm;
     }
     if (validForm) {
-      //   this.props.dispatch(loginUser(submitData)).then(response => {
-      //     if (response.payload.loginSuccess) {
-      //       this.props.dispatch(authUser());
-      //       this.setState({ isLoading: false });
-      //       this.props.history.push("/user/dashboard");
-      //     } else {
-      //       this.props.dispatch(authUser());
-      //       this.setState({
-      //         isFormError: true,
-      //         isLoading: false,
-      //         errorMsg: response.payload.message
-      //       });
-      //     }
-      //   });
+      this.props.dispatch(userProfile(submitData)).then(response => {
+        if (response.payload.success) {
+          this.props.dispatch(authUser());
+          this.setState({ isLoading: false });
+        } else {
+          this.props.dispatch(authUser());
+          this.setState({
+            isFormError: true,
+            isLoading: false,
+            errorMsg: response.payload.err
+          });
+        }
+      });
     } else {
       this.setState({ isLoading: false, isFormError: true });
     }
@@ -123,7 +126,7 @@ class EditDashboard extends Component {
         shouldValidate={formElement.config.validation}
         touched={formElement.config.touch}
         changed={event => this.inputChangedHandler(event, formElement.id)}
-      /> 
+      />
     ));
 
     return (
