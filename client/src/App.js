@@ -15,7 +15,7 @@ import ResetPassword from "./components/auth/ResetPassword";
 import SignUp from "./components/auth/SignUp";
 import Dashboard from "./components/user/dashboard/Dashboard";
 import EditDashboard from "./components/user/dashboard/EditDashboard";
-import ManageEmails from "./components/user/admin/ManageEmails";
+import Emails from "./components/user/admin/emails/Emails";
 import Group from "./components/user/group/Group";
 import EditGroup from "./components/user/group/EditGroup";
 import Plan from "./components/home/plan/Plan";
@@ -28,12 +28,14 @@ import AddEditPlan from "./components/user/admin/plan/AddEditPlan";
 import AdminPlan from "./components/user/admin/plan/Plan";
 import FaqsDetails from "./components/home/faqs/FaqsDetails";
 import Message from "./components/user/message/Message";
+import ManageEmails from "./components/user/admin/emails/ManageEmails";
 
 class App extends Component {
   state = {
     isLoading: true
   };
   componentDidMount() {
+    document.title = "SmsBox";
     this.props.dispatch(authUser()).then(() => {
       this.setState({ isLoading: false });
     });
@@ -80,11 +82,13 @@ class App extends Component {
                   component={AuthCheck(Message, true)}
                 />
                 <Route
-                  path="/user/dashboard" exact
+                  path="/user/dashboard"
+                  exact
                   component={AuthCheck(Dashboard, true)}
                 />
-                                <Route
-                  path="/user/dashboard/edit" exact
+                <Route
+                  path="/user/dashboard/edit"
+                  exact
                   component={AuthCheck(EditDashboard, true)}
                 />
 
@@ -112,7 +116,7 @@ class App extends Component {
                 <Route
                   path="/admin/manage_emails"
                   exact
-                  component={AuthCheck(ManageEmails, true, true)}
+                  component={AuthCheck(Emails, true, true)}
                 />
                 <Route
                   path="/admin/faqs"
@@ -143,6 +147,11 @@ class App extends Component {
                   path="/admin/plan/edit/:page"
                   exact
                   component={AuthCheck(AddEditPlan, true, true)}
+                />
+                <Route
+                  path="/admin/email/:title"
+                  exact
+                  component={AuthCheck(ManageEmails, true, true)}
                 />
 
                 <Route path="/faqs" exact component={AuthCheck(Faqs, null)} />

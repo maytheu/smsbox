@@ -41,7 +41,7 @@ class Message extends Component {
         },
         value: "",
         validation: {
-          isContacts: true
+          // isContacts: true
         },
         valid: false,
         errorMessage: "Enter eleven number seperated by a comma",
@@ -159,11 +159,11 @@ class Message extends Component {
     if (!this.state.isGroup) {
       this.formatContact({ contacts: submitData.contacts });
       if (this.state.isFormValid && this.state.isBlur) {
-        // this.props
-        //   .dispatch(sendSms({ ...submitData, message: data }))
-        //   .then(() => {
-        //     this.setState({ isFormSuccess: true, isLoading: false });
-        //   });
+        this.props
+          .dispatch(sendSms({ ...submitData, message: data }))
+          .then(() => {
+            this.setState({ isFormSuccess: true, isLoading: false });
+          });
         console.log({ ...submitData, message: data });
         console.log({ contacts: submitData.contacts });
       }

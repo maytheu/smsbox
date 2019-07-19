@@ -1,7 +1,9 @@
 const passport = require("passport");
 const facebookStrategy = require("passport-facebook").Strategy;
 const googleStrategy = require("passport-google-oauth20").Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const { User } = require("../../model/user");
 
@@ -28,13 +30,18 @@ passport.use(
       const existingUser = await User.findOne({ profileId: profile.id });
       if (existingUser) {
         //true
+        User.findOneAndUpdate({
+          token: jwt.sign(req.user._id.toHexString(), process.env.SECRET)
+        });
+
         done(null, existingUser);
       } else {
-        const user = await new User({
-          profileId: profile.id,
-          name: profile.displayName,
-          email: profile.emails[0].value,
-        }).save();
+        const user = new User();
+        user.profileId = profile.id;
+        user.name = profile.displayName;
+        user.email = profile.emails[0].value;
+        user.token = jwt.sign(user._id.toHexString(), process.env.SECRET);
+        user.save();
         done(null, user);
       }
     }
@@ -55,13 +62,20 @@ passport.use(
       const existingUser = await User.findOne({ profileId: profile.id });
       if (existingUser) {
         //true
+        User.findOneAndUpdate({
+          token: jwt.sign(req.user._id.toHexString(), process.env.SECRET)
+        });
+
         return done(null, existingUser);
       }
-      const user = await new User({
-        profileId: profile.id,
-        name: profile.displayName,
-        email: profile.emails[0].value,
-      }).save();
+      const user = new User();
+
+      (user.profileId = profile.id),
+        (user.name = profile.displayName),
+        (user.email = profile.emails[0].value),
+        (user.token = jwt.sign(user._id.toHexString(), process.env.SECRET));
+
+      user.save();
       done(null, user);
     }
   )

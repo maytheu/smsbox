@@ -50,6 +50,7 @@ const { bonus } = require("./middleware/bonus");
 require("./utils/auth/passport");
 const { input } = require("./utils/validate/input");
 const { total } = require("./utils/validate/total");
+const { sendEmail } = require("./utils/mail/mail");
 
 //=================================
 //             USER
@@ -139,38 +140,26 @@ app.post("/api/user/login", (req, res) => {
   });
 });
 
+
 app.get(
   "/auth/facebook",
   passport.authenticate("facebook", { scope: ["email"] })
 );
 
-// app.get(
-//   "/auth/facebook/callback",
-//   passport.authenticate("facebook", {
-//     failureRedirect: "/signin",
-//     successRedirect: "/"
-//   })
-// );
 
-app.get("/auth/facebook/callback", (req, res) => {
+app.get(
+  "/auth/facebook/callback",
   passport.authenticate("facebook", {
+    session: false,
     failureRedirect: "/signin",
-    successRedirect: "/"
+    // successRedirect: "/"
   }),
-    { session: false },
-    (err, user) => {
-      user.generateToken((err, user) => {
-        if (err) return res.status(400).send(err);
-
-        res
-          .cookie("w_auth", user.token)
-          .status(200)
-          .json({
-            loginSuccess: true
-          });
-      });
-    };
-});
+  (req, res) => {
+    var token = req.user.token;
+    res.cookie("w_auth", token); 
+    res.redirect("/");
+  }
+);
 
 app.get(
   "/auth/google",
@@ -184,10 +173,16 @@ app.get(
 
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
+  passport.authenticate("google", {session: false,
     failureRedirect: "/signin",
-    successRedirect: "/"
-  })
+    // successRedirect: "/"
+  }), 
+  (req, res) => {
+    var token = req.user.token;
+    res.cookie("w_auth", token); 
+    res.redirect("/");
+  }
+
 );
 
 app.get("/api/user/auth", auth, (req, res) => {
@@ -220,7 +215,6 @@ app.post("/api/user/edit_profile", auth, (req, res) => {
 app.get("/api/user/logout", auth, (req, res) => {
   User.findOneAndUpdate({ _id: req.user._id }, { token: "" }, (err, doc) => {
     if (err) return res.json({ success: false, err });
-    req.logout();
     return res.status(200).send({
       success: true
     });
@@ -236,7 +230,7 @@ calculate the message for deduction
 update the database with the unit and sent message
 */
 
-app.post("/api/message/new_message", auth, bonus, unit, (req, res) => {
+app.post("/api/message/new_message", auth, unit, (req, res) => {
   let messageHistory = {};
   let userUnit = req.user.units;
   let messageUnit = total(req.body.contacts);
@@ -244,46 +238,61 @@ app.post("/api/message/new_message", auth, bonus, unit, (req, res) => {
   if (messageUnit < userUnit) {
     //proceed tto message api
     //update the databse with unit and sent array
-    nexmo.message.sendSms(
-      req.body.tag,
-      req.body.contacts,
-      req.body.message,
-      (err, responseData) => {
-        if (err) {
-          console.log(err);
-          res.json({ success: err });
-        } else {
-          console.log(responseData);
-          userUnit = userUnit - messageUnit;
-          messageHistory.data = {
-            id: req.message.id,
-            unitDeducted: messageUnit,
-            totalContacts: messageUnit,
-            tag: req.message.tag,
-            message: req.message.message
-          }; //user info msg
-          messageHistory.user = {
-            id: req.user._id,
-            name: req.user.name,
-            email: req.user.email,
-            unit: userUnit
-          }; //adminto seee user details
-          User.findOneAndUpdate(
-            { _id: req.user._id },
-            { $push: { sent: messageHistory } },
-            { $set: { units: userUnit } },
-            { new: true },
-            (err, user) => {
-              if (err) return res.json({ success: err });
-              message.save((err, doc) => {
-                if (err) return res.json({ success: err });
-                res.status(200).json({ success: true });
-              });
-            }
-          );
-        }
+    let numbers = new Array();
+    numbers = req.body.contacts.split(",");
+    function after_forloop() {
+      console.log("after");
+    }
+    function releaseE() {
+      console.log("regular");
+    }
+    for (i = 0; i < messageUnit; i++) {
+      console.log(numbers[i]);
+      releaseE();
+      if (i === messageUnit - 1) {
+        after_forloop();
       }
-    );
+    }
+    // nexmo.message.sendSms(
+    //   req.body.tag,
+    //   req.body.contacts,
+    //   req.body.message,
+    //   (err, responseData) => {
+    //     if (err) {
+    //       res.json({ success: err });
+    //     } else {
+    //       console.log(responseData.messages);
+    //       userUnit = userUnit - messageUnit;
+    //       messageHistory.data = {
+    //         id: req.responseData.messages.message-id,
+    //         unitDeducted: messageUnit,
+    //         totalContacts: messageUnit,
+    //         tag: req.body.tag,
+    //          contacts: req.body.contacts,
+    //         message: req.body.message
+    //       }; //user info msg
+    //       messageHistory.user = {
+    //         id: req.user._id,
+    //         name: req.user.name,
+    //         email: req.user.email,
+    //         unit: userUnit
+    //       }; //adminto seee user details
+    //       User.findOneAndUpdate(
+    //         { _id: req.user._id },
+    //         { $push: { sent: messageHistory } },
+    //         { $set: { units: userUnit } },
+    //         { new: true },
+    //         (err, user) => {
+    //           if (err) return res.json({ success: err });
+    //           message.save((err, doc) => {
+    //             if (err) return res.json({ success: err });
+    //             res.status(200).json({ success: true });
+    //           });
+    //         }
+    //       );
+    //     }
+    //   }
+    // );
   } else {
     res.json({ success: "You do not have enough unit" });
   }
@@ -499,10 +508,12 @@ app.post("/api/plan/edit_plan", auth, admin, (req, res) => {
 //=================================
 //             EMAILS
 //=================================
-app.get("/api/email/update", auth, (req, res) => {
-  User.find({}, { email: 1, _id: 0, name: 1 }, (err, plan) => {
-    if (err) return res.status(400).send(err);
-    res.status(200).send(plan);
+app.get("/api/email/update", (req, res) => {
+  User.distinct("email", (err, email) => {
+    User.distinct("name", (err, name) => {
+      let detail = { subject: req.body.subject, email: req.body.email };
+      sendEmail(email, name, null, "update", detail);
+    });
   });
 });
 

@@ -114,6 +114,7 @@ class AddEditPlan extends Component {
     const planId = this.props.match.params.page;
     if (!planId) {
       this.setState({ title: "Add Plan" });
+      document.title = 'Add Plan - SmsBox'
     } else {
       this.setState({ isLoading: true });
       this.props.dispatch(viewPlan(planId)).then(() => {
@@ -130,6 +131,8 @@ class AddEditPlan extends Component {
           false
         );
       });
+      document.title =`Edit ${this.state.title} - SmsBox`
+
     }
   }
 
