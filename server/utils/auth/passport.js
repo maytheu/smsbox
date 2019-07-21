@@ -30,9 +30,9 @@ passport.use(
       const existingUser = await User.findOne({ profileId: profile.id });
       if (existingUser) {
         //true
-        User.findOneAndUpdate({
-          token: jwt.sign(req.user._id.toHexString(), process.env.SECRET)
-        });
+        // User.findOneAndUpdate({
+        //   token: jwt.sign(req.user._id.toHexString(), process.env.SECRET)
+        // });
 
         done(null, existingUser);
       } else {
@@ -59,24 +59,30 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       //check if profile id exist
-      const existingUser = await User.findOne({ profileId: profile.id });
+      const existingUser = await User.find({ profileId: profile.id });
       if (existingUser) {
         //true
-        User.findOneAndUpdate({
-          token: jwt.sign(req.user._id.toHexString(), process.env.SECRET)
-        });
+        // let id = existingUser._id
+        // console.log(id)
+        console.log(existingUser);
+        // await User.update(
+        //   {
+        //     $set: {
+        //       token:
+        //     }
+        //   }
+        //   );
+         return done(null, existingUser);
 
-        return done(null, existingUser);
+      } 
+        const user = new User();
+        (user.profileId = profile.id),
+          (user.name = profile.displayName),
+          (user.email = profile.emails[0].value),
+          (user.token = jwt.sign(user._id.toHexString(), process.env.SECRET));
+        user.save();
+        done(null, user);
       }
-      const user = new User();
-
-      (user.profileId = profile.id),
-        (user.name = profile.displayName),
-        (user.email = profile.emails[0].value),
-        (user.token = jwt.sign(user._id.toHexString(), process.env.SECRET));
-
-      user.save();
-      done(null, user);
-    }
+    
   )
 );

@@ -152,7 +152,6 @@ app.get(
   passport.authenticate("facebook", {
     session: false,
     failureRedirect: "/signin",
-    // successRedirect: "/"
   }),
   (req, res) => {
     var token = req.user.token;
