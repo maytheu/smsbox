@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
 import "./header.css";
-import logo from '../../assets/logo.png'
+import logo from "../../assets/logo.png";
 import SideDrawer from "../util/SideDrawer";
 import { navLink, userLink, adminLink } from "../util/misc";
 import { logoutUser, authUser } from "../../actions/userActions";
@@ -45,7 +45,7 @@ class Header extends Component {
             <li key={nav.title}>
               {nav.title === "Logout" ? (
                 <div onClick={this.signoutHandler}>
-                  <Link to='/'>{nav.title}</Link>
+                  <Link to="/">{nav.title}</Link>
                 </div>
               ) : (
                 <Link to={nav.linkTo}>{nav.title}</Link>
@@ -56,7 +56,7 @@ class Header extends Component {
             <li key={nav.title}>
               {nav.title === "Logout" ? (
                 <div onClick={this.signoutHandler}>
-                  <Link to='/'>{nav.title}</Link>
+                  <Link to="/">{nav.title}</Link>
                 </div>
               ) : (
                 <Link to={nav.linkTo}>{nav.title}</Link>
@@ -77,10 +77,16 @@ class Header extends Component {
           <div className="nav-wrapper">
             <Link to="/">
               <div className="brand-logo">
-                <div><img src={logo} alt='logo' /></div>
+                <div>
+                  <img src={logo} alt="logo" />
+                </div>
               </div>
             </Link>
-            <div className="mobile" onClick={this.sideDrawerHandler}>
+            <div
+              className="mobile"
+              onClick={this.sideDrawerHandler}
+              style={{ cursor: "pointer" }}
+            >
               <i className="material-icons">menu</i>
             </div>
             <SideDrawer
@@ -90,7 +96,7 @@ class Header extends Component {
             <ul className="right hide-on-med-and-down">{this.renderNavs()}</ul>
           </div>
         </nav>
-        <div className='clear'/>
+        <div className="clear" />
       </div>
     );
   }

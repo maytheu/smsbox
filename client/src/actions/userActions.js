@@ -7,8 +7,7 @@ import {
   USER_LOGOUT,
   USER_REGISTER,
   USER_RESET,
-  USER_PROFILE
-} from "./types";
+  USER_PROFILE} from "./types";
 
 export function loginUser(data) {
   const request = axios

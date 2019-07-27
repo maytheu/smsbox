@@ -1,7 +1,6 @@
 const passport = require("passport");
 const facebookStrategy = require("passport-facebook").Strategy;
 const googleStrategy = require("passport-google-oauth20").Strategy;
-const LocalStrategy = require("passport-local").Strategy;
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
@@ -30,11 +29,19 @@ passport.use(
       const existingUser = await User.findOne({ profileId: profile.id });
       if (existingUser) {
         //true
-        // User.findOneAndUpdate({
-        //   token: jwt.sign(req.user._id.toHexString(), process.env.SECRET)
-        // });
-
-        done(null, existingUser);
+        token = jwt.sign(existingUser["_id"].toHexString(), process.env.SECRET);
+        User.findOneAndUpdate(
+          { _id: existingUser["_id"] },
+          {
+            $set: {
+              token: token
+            }
+          },
+          { new: true },
+          (err, user) => {
+            done(null, user);
+          }
+        );
       } else {
         const user = new User();
         user.profileId = profile.id;
@@ -59,22 +66,23 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       //check if profile id exist
-      const existingUser = await User.find({ profileId: profile.id });
+      const existingUser = await User.findOne({ profileId: profile.id });
       if (existingUser) {
         //true
-        // let id = existingUser._id
-        // console.log(id)
-        console.log(existingUser);
-        // await User.update(
-        //   {
-        //     $set: {
-        //       token:
-        //     }
-        //   }
-        //   );
-         return done(null, existingUser);
-
-      } 
+        token = jwt.sign(existingUser["_id"].toHexString(), process.env.SECRET);
+         User.findOneAndUpdate(
+          { _id: existingUser["_id"] },
+          {
+            $set: {
+              token: token
+            }
+          },
+          { new: true },
+          (err, user) => {
+            done(null, user);
+          }
+        );
+      } else {
         const user = new User();
         (user.profileId = profile.id),
           (user.name = profile.displayName),
@@ -83,6 +91,6 @@ passport.use(
         user.save();
         done(null, user);
       }
-    
+    }
   )
 );

@@ -32,3 +32,8 @@ export const DELETE_MESSAGE = "delete_message";
 export const SEND_UPDATES = "send_updates";
 export const SEND_PROMOMTIONS = "send_promotions";
 export const SEND_REMINDER = "send_promtions";
+
+export const NEW_ABOUT = "new_about";
+export const EDIT_ABOUT = "edit_about";
+export const VIEW_ABOUT = "view_about";
+export const CLEAR_ABOUT = "clear_about";

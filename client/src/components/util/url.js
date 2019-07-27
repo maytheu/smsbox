@@ -4,3 +4,6 @@ export const FAQS_SERVER = "/api/faqs/";
 export const GROUP_SERVER = "/api/group/";
 export const MESSAGE_SERVER = "/api/message/";
 export const EMAIL_SERVER = "/api/email/";
+export const SOCIAL_FACEBOOK_SERVER = "/auth/facebook";
+export const SOCIAL_GOOGLE_SERVER = "auth/google";
+export const ABOUT_SERVER = "/api/about";

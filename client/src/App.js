@@ -29,6 +29,9 @@ import AdminPlan from "./components/user/admin/plan/Plan";
 import FaqsDetails from "./components/home/faqs/FaqsDetails";
 import Message from "./components/user/message/Message";
 import ManageEmails from "./components/user/admin/emails/ManageEmails";
+import AdminAbout from "./components/user/admin/about/About";
+import EditAbout from "./components/user/admin/about/EditAbout";
+import About from "./components/home/About";
 
 class App extends Component {
   state = {
@@ -153,6 +156,16 @@ class App extends Component {
                   exact
                   component={AuthCheck(ManageEmails, true, true)}
                 />
+                <Route
+                  path="/admin/about_us"
+                  exact
+                  component={AuthCheck(AdminAbout, true, true)}
+                />
+                <Route
+                  path="/admin/about/edit"
+                  exact
+                  component={AuthCheck(EditAbout, true, true)}
+                />
 
                 <Route path="/faqs" exact component={AuthCheck(Faqs, null)} />
                 <Route
@@ -165,6 +178,11 @@ class App extends Component {
                   path="/plan/:title"
                   exact
                   component={AuthCheck(PlanDetails, null)}
+                />
+                <Route
+                  path="/about_us"
+                  exact
+                  component={AuthCheck(About, null)}
                 />
                 <Route path="/" exact component={AuthCheck(Home, null)} />
               </Switch>

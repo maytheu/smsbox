@@ -4,7 +4,6 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const moment = require("moment");
-const cookieSession = require("cookie-session");
 const multer = require("multer");
 const fs = require("fs"); //access file dir
 const path = require("path");
@@ -20,12 +19,6 @@ mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-// app.use(
-//   cookieSession({
-//     maxAge: 2 * 24 * 60 * 60 * 1000,
-//     keys: [process.env.COOKIE_KEY]
-//   })
-// );
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -41,6 +34,7 @@ const { Group } = require("./model/group");
 const { Message } = require("./model/message");
 const { Plan } = require("./model/plan");
 const { Faqs } = require("./model/faqs");
+const { About } = require("./model/about");
 
 const { auth } = require("./middleware/auth");
 const { unit } = require("./middleware/unit");
@@ -140,23 +134,22 @@ app.post("/api/user/login", (req, res) => {
   });
 });
 
-
 app.get(
   "/auth/facebook",
   passport.authenticate("facebook", { scope: ["email"] })
 );
 
-
 app.get(
   "/auth/facebook/callback",
   passport.authenticate("facebook", {
     session: false,
-    failureRedirect: "/signin",
+    failureRedirect: "/signin"
   }),
   (req, res) => {
     var token = req.user.token;
-    res.cookie("w_auth", token); 
-    res.redirect("/");
+    console.log(token);
+    res.cookie("w_auth", token);
+    res.redirect("/user/dashboard");
   }
 );
 
@@ -172,16 +165,16 @@ app.get(
 
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", {session: false,
-    failureRedirect: "/signin",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "/signin"
     // successRedirect: "/"
-  }), 
+  }),
   (req, res) => {
     var token = req.user.token;
-    res.cookie("w_auth", token); 
-    res.redirect("/");
+    res.cookie("w_auth", token);
+    res.redirect("/user/dashboard");
   }
-
 );
 
 app.get("/api/user/auth", auth, (req, res) => {
@@ -463,6 +456,41 @@ app.get("/api/group/delete", auth, (req, res) => {
 });
 
 //=================================
+//             ABOUT
+//=================================
+app.get("/api/about", (req, res) => {
+  About.find({}, (err, about) => {
+    if (err) return res.status(400).send(err);
+    res.status(200).send(about);
+  });
+});
+
+app.post("/api/about/edit", auth, admin, (req, res) => {
+  About.findOneAndUpdate(
+    { _id: req.body.id },
+    { $set: { about: req.body.about } },
+    { new: true },
+    (err, doc) => {
+      if (err) return res.json({ success: false, err });
+      return res.status(200).send({
+        success: true,
+        updateAbout: doc
+      });
+    }
+  );
+});
+
+//this route will be available for once
+app.post("/api/about/new_about", auth, admin, (req, res) => {
+  const about = new About(req.body);
+
+  about.save((err, doc) => {
+    if (err) return res.json({ success: false, err });
+    res.status(200).json({ success: true });
+  });
+});
+
+//=================================
 //             PLAN
 //=================================
 app.get("/api/plan/view_plans", (req, res) => {
@@ -507,11 +535,22 @@ app.post("/api/plan/edit_plan", auth, admin, (req, res) => {
 //=================================
 //             EMAILS
 //=================================
-app.get("/api/email/update", (req, res) => {
+app.post("/api/email/update", (req, res) => {
   User.distinct("email", (err, email) => {
     User.distinct("name", (err, name) => {
       let detail = { subject: req.body.subject, email: req.body.email };
       sendEmail(email, name, null, "update", detail);
+      return res.json({ success: true });
+    });
+  });
+});
+
+app.post("/api/email/promotion", (req, res) => {
+  User.distinct("email", (err, email) => {
+    User.distinct("name", (err, name) => {
+      let detail = { subject: req.body.subject, email: req.body.email };
+      sendEmail(email, name, null, "promotions", detail);
+      return res.json({ success: true });
     });
   });
 });

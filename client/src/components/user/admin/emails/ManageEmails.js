@@ -9,6 +9,7 @@ import "../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg
 
 import { checkValidityInput } from "../../../util/form/formActions";
 import FormField from "../../../util/form/FormField";
+import { updates, promotions } from "../../../../actions/emailActions";
 
 class ManageEmails extends Component {
   state = {
@@ -86,9 +87,11 @@ class ManageEmails extends Component {
     console.log({ ...submitData, email: data });
     if (this.state.isFormValid && this.state.isBlur) {
       if (this.state.title === "updates") {
-        console.log("updates");
+        this.props.dispatch(updates({ ...submitData, email: data }));
+        this.props.history.push("/admin/manage_emails");
       } else if (this.state.title === "promotions") {
-        console.log("promotios");
+        this.props.dispatch(promotions({ ...submitData, email: data }));
+        this.props.history.push("/admin/manage_emails");
       } else {
         console.log("reminder");
       }

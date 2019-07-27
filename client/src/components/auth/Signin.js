@@ -12,42 +12,50 @@ import gp from "../../assets/icon/gplus.png";
 import { loginUser, authUser } from "../../actions/userActions";
 
 class Signin extends Component {
-  state = {
-    form: {
-      email: {
-        elementType: "input",
-        elementConfig: {
-          type: "email",
-          placeholder: "Email Address"
+  constructor() {
+    super();
+    this._isMounted = true;
+    this.state = {
+      form: {
+        email: {
+          elementType: "input",
+          elementConfig: {
+            type: "email",
+            placeholder: "Email Address"
+          },
+          value: "",
+          validation: {
+            required: true,
+            isEmail: true
+          },
+          valid: false,
+          touch: false
         },
-        value: "",
-        validation: {
-          required: true,
-          isEmail: true
-        },
-        valid: false,
-        touch: false
+        password: {
+          elementType: "input",
+          elementConfig: {
+            type: "password",
+            placeholder: "Password"
+          },
+          value: "",
+          validation: {
+            required: true,
+            minLength: 6
+          },
+          valid: false,
+          touch: false
+        }
       },
-      password: {
-        elementType: "input",
-        elementConfig: {
-          type: "password",
-          placeholder: "Password"
-        },
-        value: "",
-        validation: {
-          required: true,
-          minLength: 6
-        },
-        valid: false,
-        touch: false
-      }
-    },
-    isFormValid: false,
-    isLoading: false,
-    isFormError: false,
-    errorMsg: ""
-  };
+      isFormValid: false,
+      isLoading: false,
+      isFormError: false,
+      errorMsg: ""
+    };
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   inputChangedHandler = (event, formName) => {
     const updatedForm = {
@@ -80,17 +88,18 @@ class Signin extends Component {
     }
     if (validForm) {
       this.props.dispatch(loginUser(submitData)).then(response => {
-        if (response.payload.loginSuccess) {
-          this.props.dispatch(authUser());
+        const req = response.payload;
+        if (req.loginSuccess) {
           this.setState({ isLoading: false });
+          //          this.props.dispatch(authUser());
           this.props.history.push("/user/dashboard");
         } else {
-          this.props.dispatch(authUser());
           this.setState({
             isFormError: true,
             isLoading: false,
-            errorMsg: response.payload.message
+            errorMsg: req.message
           });
+          //          this.props.dispatch(authUser());
         }
       });
     } else {
@@ -99,6 +108,7 @@ class Signin extends Component {
   };
 
   render() {
+    console.log(this.state.errorMsg);
     const formElementArray = [];
     for (let formKey in this.state.form) {
       formElementArray.push({
