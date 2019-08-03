@@ -24,7 +24,7 @@ const getEmailData = (to, name, token, template, actionData) => {
       data = {
         from: "SmsBox - Bulk Sms solutions <maytheu98@gmail.com>",
         to,
-        subject: `Welcome to Sms Box Arena ${name}`,
+        subject: `Welcome to Sms Box, ${name}`,
         html: welcome()
       };
       break;
@@ -44,15 +44,23 @@ const getEmailData = (to, name, token, template, actionData) => {
         html: purchase(actionData)
       };
       break;
-    case "update":
+    case "updates":
       data = {
-        from: "SmsBox - Bulk Sms solutions <maytheu98@gmail.com>",
+        from: "SmsBox - Bulk Sms solutions <updates@smsbox.com>",
         to,
-        subject: `Welcome to S ${name}`,
-        html: welcome(data)
+        subject: Data.subject,
+        html: welcome(actionData.email)
       };
       break;
-
+      case "promotions":
+        data = {
+          from: "SmsBox - Bulk Sms solutions <promotions@smsbox.com>",
+          to,
+          subject:actionData.subject ,
+          html: welcome(actionData.email)
+        };
+        break;
+  
     default:
       data;
   }
@@ -76,21 +84,27 @@ const sendEmail = (to, name, token, type, actionData = null) => {
     for (let i = 0; i < to.length; i++) {
       if (to[i] === to[i]) {
         mail = getEmailData(to[i], name[i], token, type, actionData);
-        console.log(mail);
+        smtpTransport.sendMail(mail, function(error, response) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(response);
+          }
+          smtpTransport.close();
+        });
       }
     }
   } else {
     mail = getEmailData(to, name, token, type, actionData);
+    smtpTransport.sendMail(mail, function(error, response) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(response);
+      }
+      smtpTransport.close();
+    });
   }
-
-  smtpTransport.sendMail(mail, function(error, response) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(response);
-    }
-    smtpTransport.close();
-  });
 };
 
 module.exports = { sendEmail };

@@ -43,6 +43,7 @@ const userSchema = mongoose.Schema({
   resetTokenExp: {
     type: Number
   },
+  lastLogin: Number,
   sent: {
     type: Array,
     default: [] 

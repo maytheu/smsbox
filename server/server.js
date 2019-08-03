@@ -8,6 +8,7 @@ const multer = require("multer");
 const fs = require("fs"); //access file dir
 const path = require("path");
 const Nexmo = require("nexmo");
+const cron = require("node-cron");
 
 const app = express();
 
@@ -123,12 +124,17 @@ app.post("/api/user/login", (req, res) => {
       user.generateToken((err, user) => {
         if (err) return res.status(400).send(err);
 
-        res
-          .cookie("w_auth", user.token)
-          .status(200)
-          .json({
-            loginSuccess: true
-          });
+        user.lastLogin = moment();
+        
+        user.save((err, user) => {
+          if (err) return res.json({ success: false, err });
+          res
+            .cookie("w_auth", user.token)
+            .status(200)
+            .json({
+              loginSuccess: true
+            });
+        });
       });
     });
   });
@@ -147,7 +153,6 @@ app.get(
   }),
   (req, res) => {
     var token = req.user.token;
-    console.log(token);
     res.cookie("w_auth", token);
     res.redirect("/user/dashboard");
   }
@@ -535,24 +540,60 @@ app.post("/api/plan/edit_plan", auth, admin, (req, res) => {
 //=================================
 //             EMAILS
 //=================================
-app.post("/api/email/update", (req, res) => {
+app.post("/api/email/update", auth, admin, (req, res) => {
   User.distinct("email", (err, email) => {
     User.distinct("name", (err, name) => {
       let detail = { subject: req.body.subject, email: req.body.email };
-      sendEmail(email, name, null, "update", detail);
+      sendEmail(email, name, null, "updates", detail);
       return res.json({ success: true });
     });
   });
 });
 
-app.post("/api/email/promotion", (req, res) => {
+app.post("/api/email/promotion", auth, admin, (req, res) => {
   User.distinct("email", (err, email) => {
     User.distinct("name", (err, name) => {
       let detail = { subject: req.body.subject, email: req.body.email };
       sendEmail(email, name, null, "promotions", detail);
+
       return res.json({ success: true });
     });
   });
+});
+
+// schedule tasks to be run on the server
+// cron.schedule("30 0/1450 * * *", function(req, res) {
+  cron.schedule("* * * * *", function(req, res) {
+
+let nowDate = moment()
+let dateDiff = ''
+User.find({}, (err, user)=>{
+  if (err) return res.status(400).send(err);
+  //save lastLogin in a object - check  the last login and create a copy of new one then find by each last login by iterating using loop
+// if(dateDiff >= 4320000000){//50 days login
+
+// }
+console.log(nowDate)
+let loginDates={}
+user.name = loginDates
+console.log("running a task every hour");
+console.log(user)
+for(let key in user){
+  console.log(`loop ${user[key].lastLogin}`)
+  dateDiff = nowDate - user.lastLogin
+  console.log(dateDiff)
+
+}
+// user.lastLogin = loginDates
+// dateDiff = nowDate - user.lastLogin
+
+})
+});
+cron.schedule("* 0/1 * * *", function(req, res) {
+  console.log("running a task every hour");
+  console.log(moment());
+  console.log(moment().add(2, "months")); //86400000
+  console.log(moment().add(2, "months") - moment());
 });
 
 //=================================
