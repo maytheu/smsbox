@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.9.3",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "^0.8.4",
     "html-to-draftjs": "^1.4.0",
